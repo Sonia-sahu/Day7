@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Product Management</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+        }
+
+        .product {
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            margin-top: 30px;
+        }
+
+        input,
+        textarea {
+            display: block;
+            margin: 5px 0;
+            width: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Product List</h1>
+
+    {% for product in products %}
+    <div class="product">
+        <strong>{{ product.name }}</strong> - ₹{{ product.price }}<br>
+        <em>{{ product.description }}</em><br>
+
+        <!-- Delete Form -->
+        <form method="POST" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="id" value="{{ product.id }}">
+            <button type="submit">Delete</button>
+        </form>
+
+        <!-- Edit Button -->
+        <button
+            onclick="showEditForm('{{ product.id }}', '{{ product.name|escapejs }}', '{{ product.price|escapejs }}', '{{ product.description|escapejs }}')">Edit</button>
+    </div>
+    {% endfor %}
+
+    <!-- Add Product Form -->
+    <div class="form-section">
+        <h2>Add Product</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add">
+            <input name="name" placeholder="Product Name" required>
+            <input name="price" type="number" placeholder="Price" required>
+            <textarea name="description" placeholder="Description" required></textarea>
+            <button type="submit">Add Product</button>
+        </form>
+    </div>
+
+    <!-- Edit Product Form -->
+    <div class="form-section" id="editForm" style="display:none;">
+        <h2>Edit Product</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="edit">
+            <input type="hidden" name="id" id="edit-id">
+            <input name="name" id="edit-name" required>
+            <input name="price" type="number" id="edit-price" required>
+            <textarea name="description" id="edit-description" required></textarea>
+            <button type="submit">Update Product</button>
+        </form>
+    </div>
+
+    <script>
+        function showEditForm(id, name, price, description) {
+            document.getElementById('editForm').style.display = 'block';
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-name').value = name;
+            document.getElementById('edit-price').value = price;
+            document.getElementById('edit-description').value = description;
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    </script>
+</body>
+
+</html>
